@@ -2,3 +2,24 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+
+$(function () {
+    let PlaceHolderElement = $('#PlaceHolderHere')
+    $('button[data-toggle="ajax-modal"]').click(function (event) {
+        let url = $(this).data('url');
+        $.get(url).done(function (data) {
+            PlaceHolderElement.html(data);
+            PlaceHolderElement.find('.modal').modal('show')
+        });
+    });
+
+    PlaceHolderElement.on('click', 'button[data-save="modal"]', function (event) {
+        let form = $(this).parents('.modal').find('form');
+        let actionUrl = form.attr('action');
+        let sendData = form.serialize();
+        $.post(actionUrl, sendData).done(function (data) {
+            PlaceHolderElement.find('.modal').modal('hide');
+            location.reload();
+        });
+    });
+});

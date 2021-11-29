@@ -63,7 +63,13 @@ namespace aspsession.Controllers
                     {
                         var role = _context.Roles.First(x => x.Id == user.RoleId).Name;
                         await Authenticate(user.Email, role);
-                        return RedirectToAction("Index", "Home");
+                        return user.RoleId switch
+                        {
+                            1 => RedirectToAction("Users", "Admin"),    // Администратор
+                            2 => RedirectToAction("Index", "Home"),     // Сотрудник деканата
+                            3 => RedirectToAction("Index", "Home"),     // Преподаватель
+                            _ => throw new NotImplementedException(),
+                        };
                     }
                 }
             }
