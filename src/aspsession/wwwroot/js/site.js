@@ -7,7 +7,8 @@ $(function () {
     let PlaceHolderElement = $('#PlaceHolderHere')
     $('button[data-toggle="ajax-modal"]').click(function (event) {
         let url = $(this).data('url');
-        $.get(url).done(function (data) {
+        let decodeUrl = decodeURIComponent(url); 
+        $.get(decodeUrl).done(function (data) {
             PlaceHolderElement.html(data);
             PlaceHolderElement.find('.modal').modal('show')
         });

@@ -41,15 +41,15 @@ else
                 <td>@user.Password</td>
                 <td>
                     <div class="action-area">
-                        <div class="btn btn-outline-primary action-icon">
+                        <button class="btn btn-outline-primary action-icon">
                             <i class="fas fa-eye" title="Удерживайте, чтобы увидеть пароль."></i>
-                        </div>
-                        <div class="btn btn-outline-secondary action-icon">
+                        </button>
+                        <button class="btn btn-outline-secondary action-icon" data-toggle="ajax-modal" data-target="#addUser" data-url="@Url.Action($"Edit/{user.Id}")">
                             <i class="fas fa-pen" title="Нажмите, чтобы редактировать информацию о пользователе."></i>
-                        </div>
-                        <div class="btn btn-outline-danger action-icon">
+                        </button>
+                        <button class="btn btn-outline-danger action-icon" data-toggle="ajax-modal" data-target="#addUser" data-url="@Url.Action($"Delete/{user.Id}")">
                             <i class="fas fa-trash" title="Нажмите, чтобы удалить пользователя."></i>
-                        </div>
+                        </button>
                     </div>
                 </td>
             </tr>

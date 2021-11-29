@@ -82,5 +82,35 @@ namespace aspsession.Controllers
             await _context.SaveChangesAsync();
             return PartialView("_CreateUserModalPartial", user);
         }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var user = _context.Users.FirstOrDefault(user => user.Id == id);
+            return PartialView("_EditUserModalPartial", user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return PartialView("_EditUserModalPartial", user);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var user = _context.Users.FirstOrDefault(user => user.Id == id);
+            return PartialView("_DeleteUserModalPartial", user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(User user)
+        {
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return PartialView("_DeleteUserModalPartial", user);
+        }
     }
 }

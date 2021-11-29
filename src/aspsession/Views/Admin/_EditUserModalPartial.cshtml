@@ -4,12 +4,13 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 id="modal_title" class="modal-title">Добавить пользователя</h5>
+        <h5 id="modal_title" class="modal-title">Изменить данные пользователя</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="Create">
+        <form action="Edit">
             <div class="form-group mb-3">
+                <input type="hidden" asp-for="@Model.Id" />
                 <label asp-for="Name">ФИО</label>
                 <input asp-for="Name" class="form-control">
                 <span asp-validation-for="Name" class="text-danger"></span>

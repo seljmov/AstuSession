@@ -1,0 +1,22 @@
+﻿@model User
+
+<div id="addUser" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="modal_title" class="modal-title">Удалить пользователя</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="Delete">
+            <input type="hidden" asp-for="@Model.Id" />
+            <h4>Вы точно хотите удалить пользователя @Model.Name?</h4>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Отменить</button>
+        <button type="button" class="btn btn-danger" data-save="modal">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
