@@ -66,7 +66,7 @@ namespace aspsession.Controllers
                         return user.RoleId switch
                         {
                             1 => RedirectToAction("Users", "Admin"),    // Администратор
-                            2 => RedirectToAction("Index", "Home"),     // Сотрудник деканата
+                            2 => RedirectToAction("Sheets", "Dean"),    // Сотрудник деканата
                             3 => RedirectToAction("Index", "Home"),     // Преподаватель
                             _ => throw new NotImplementedException(),
                         };
