@@ -1,4 +1,43 @@
-﻿@{
+﻿@model IList<aspsession.ViewModels.Dean.SheetViewModel>
+
+@{
     ViewData["Title"] = "Ведомости";
     Layout = "_DeanLayout";
+}
+
+<h3>Список ведомостей</h3>
+
+@if (Model == null)
+{
+    <p><em>Список ведомостей пуст...</em></p>
+}
+else
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Тип</th>
+            <th>Номер семестра</th>
+            <th>Год</th>
+            <th>Группа</th>
+            <th>Дисциплина</th>
+            <th>Преподаватель</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sheet in Model)
+        {
+            <tr>
+                <td>@sheet.Id</td>
+                <td>@sheet.Type</td>
+                <td>@sheet.TermNumber</td>
+                <td>@sheet.Year</td>
+                <td>@sheet.Group</td>
+                <td>@sheet.Discipline</td>
+                <td>@sheet.Teacher</td>
+            </tr>
+        }
+        </tbody>
+</table>
 }

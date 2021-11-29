@@ -31,7 +31,26 @@ public class DeanController : Controller
     [HttpGet]
     public IActionResult Sheets()
     {
-        return View();
+        var sheets = _context.Sheets.ToList();
+
+        IList<SheetViewModel> model = null;
+
+        if (sheets.Any())
+        {
+            // model = new List<SheetViewModel>();
+            model = sheets.Select(sheet => new SheetViewModel 
+            {
+                Id = sheet.Id,
+                Type = _context.SheetTypes.ToList().FirstOrDefault(type => type.Id == sheet.TypeId).Name,
+                TermNumber = sheet.TermNumber,
+                Year = sheet.Year,
+                Group = _context.Groups.ToList().FirstOrDefault(group => group.Id == sheet.GroupId).Name,
+                Discipline = _context.Disciplines.ToList().FirstOrDefault(disc => disc.Id == sheet.DisciplineId).Name,
+                Teacher = _context.Teachers.ToList().FirstOrDefault(teacher => teacher.Id == sheet.TeacherId).Name,
+            }).ToList();
+        }
+
+        return View(model);
     }
 
     [HttpGet]
@@ -77,9 +96,9 @@ public class DeanController : Controller
         return (group.Name, departments.Name, institute.Name);
     }
 
-    private (string Departments, string Institute) UniversityHierarchyByDepartmentId(int eepartmentId)
+    private (string Departments, string Institute) UniversityHierarchyByDepartmentId(int departmentId)
     {
-        var departments = _context.Departments.ToList().FirstOrDefault(dep => dep.Id == eepartmentId);
+        var departments = _context.Departments.ToList().FirstOrDefault(dep => dep.Id == departmentId);
         var institute = _context.Institutes.ToList().FirstOrDefault(inst => inst.Id == departments.InstituteId);
 
         return (departments.Name, institute.Name);
