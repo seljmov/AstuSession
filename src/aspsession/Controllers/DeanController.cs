@@ -22,12 +22,20 @@ public class DeanController : Controller
         _context = context;
     }
 
+    /// <summary>
+    /// Начальная страница
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public IActionResult Index()
     {
         return RedirectToAction("Sheets", "Dean");
     }
 
+    /// <summary>
+    /// Страница ведомостей
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public IActionResult Sheets()
     {
@@ -53,6 +61,10 @@ public class DeanController : Controller
         return View(model);
     }
 
+    /// <summary>
+    /// Страница преподавателей
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public IActionResult Teachers()
     {
@@ -69,6 +81,10 @@ public class DeanController : Controller
         return View(model);
     }
 
+    /// <summary>
+    /// Страница студентов
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public IActionResult Students()
     {

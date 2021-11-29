@@ -25,15 +25,15 @@ else
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model)
+        @foreach (var student in Model)
         {
             <tr>
-                <td>@user.Id</td>
-                <td>@user.Name</td>
-                <td>@user.BookNumber</td>
-                <td>@user.Group</td>
-                <td>@user.Departments</td>
-                <td>@user.Institute</td>
+                <td>@student.Id</td>
+                <td>@student.Name</td>
+                <td>@student.BookNumber</td>
+                <td>@student.Group</td>
+                <td>@student.Departments</td>
+                <td>@student.Institute</td>
             </tr>
         }
         </tbody>

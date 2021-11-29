@@ -23,13 +23,13 @@ else
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model)
+        @foreach (var teacher in Model)
         {
             <tr>
-                <td>@user.Id</td>
-                <td>@user.Name</td>
-                <td>@user.Departments</td>
-                <td>@user.Institute</td>
+                <td>@teacher.Id</td>
+                <td>@teacher.Name</td>
+                <td>@teacher.Departments</td>
+                <td>@teacher.Institute</td>
             </tr>
         }
         </tbody>
