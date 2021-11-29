@@ -37,7 +37,17 @@ public class DeanController : Controller
     [HttpGet]
     public IActionResult Teachers()
     {
-        return View();
+        var teachers = _context.Teachers.ToList();
+
+        var model = teachers.Select(teacher => new TeacherViewModel
+        {
+            Id = teacher.Id,
+            Name = teacher.Name,
+            Departments = UniversityHierarchyByDepartmentId(teacher.DepartmentsId).Departments,
+            Institute = UniversityHierarchyByDepartmentId(teacher.DepartmentsId).Institute,
+        }).ToList();
+
+        return View(model);
     }
 
     [HttpGet]
@@ -50,20 +60,28 @@ public class DeanController : Controller
             Id = student.Id,
             BookNumber = student.BookNumber,
             Name = student.Name,
-            Group = UniversityHierarchyByGroup(student.GroupId).Group,
-            Departments = UniversityHierarchyByGroup(student.GroupId).Departments,
-            Institute = UniversityHierarchyByGroup(student.GroupId).Institute,
+            Group = UniversityHierarchyByGroupId(student.GroupId).Group,
+            Departments = UniversityHierarchyByGroupId(student.GroupId).Departments,
+            Institute = UniversityHierarchyByGroupId(student.GroupId).Institute,
         }).ToList();
 
         return View(model);
     }
 
-    private (string Group, string Departments, string Institute) UniversityHierarchyByGroup(int groupId)
+    private (string Group, string Departments, string Institute) UniversityHierarchyByGroupId(int groupId)
     {
         var group = _context.Groups.ToList().FirstOrDefault(group => group.Id == groupId);
         var departments = _context.Departments.ToList().FirstOrDefault(dep => dep.Id == group.DepartmentsId);
         var institute = _context.Institutes.ToList().FirstOrDefault(inst => inst.Id == departments.InstituteId);
 
         return (group.Name, departments.Name, institute.Name);
+    }
+
+    private (string Departments, string Institute) UniversityHierarchyByDepartmentId(int eepartmentId)
+    {
+        var departments = _context.Departments.ToList().FirstOrDefault(dep => dep.Id == eepartmentId);
+        var institute = _context.Institutes.ToList().FirstOrDefault(inst => inst.Id == departments.InstituteId);
+
+        return (departments.Name, institute.Name);
     }
 }

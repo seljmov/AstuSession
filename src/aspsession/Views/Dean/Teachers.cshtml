@@ -1,4 +1,37 @@
-﻿@{
+﻿@model IList<aspsession.ViewModels.Dean.TeacherViewModel>
+
+@{
     ViewData["Title"] = "Преподаватели";
     Layout = "_DeanLayout";
+}
+
+<h3>Список преподавателей</h3>
+
+@if (Model == null)
+{
+    <p><em>Список преподавателей пуст...</em></p>
+}
+else
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>ФИО</th>
+            <th>Кафедра</th>
+            <th>Институт</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.Name</td>
+                <td>@user.Departments</td>
+                <td>@user.Institute</td>
+            </tr>
+        }
+        </tbody>
+</table>
 }

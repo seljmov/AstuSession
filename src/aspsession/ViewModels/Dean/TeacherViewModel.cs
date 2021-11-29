@@ -1,9 +1,9 @@
 ﻿namespace aspsession.ViewModels.Dean;
 
 /// <summary>
-/// Модель студента для вывода
+/// Модель преподавателя для вывода
 /// </summary>
-public class StudentViewModel
+public class TeacherViewModel
 {
     /// <summary>
     /// Идентификатор
@@ -11,19 +11,9 @@ public class StudentViewModel
     public int Id { get; set; }
 
     /// <summary>
-    /// Номер зачетной книжки
-    /// </summary>
-    public string BookNumber { get; set; }
-
-    /// <summary>
     /// Фамилия И.О.
     /// </summary>
     public string Name { get; set; }
-
-    /// <summary>
-    /// Группа
-    /// </summary>
-    public string Group { get; set; }
 
     /// <summary>
     /// Кафедра
