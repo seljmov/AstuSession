@@ -39,10 +39,12 @@ else
                 <td>@user.Name</td>
                 <td>@user.Role</td>
                 <td>@user.Email</td>
-                <td>@user.Password</td>
+                <td>
+                    <input id="user_password_@user.Id" class="show-password" type="password" value="@user.Password" readonly />
+                </td>
                 <td>
                     <div class="action-area">
-                        <button class="btn btn-outline-primary action-icon">
+                        <button class="btn btn-outline-primary action-icon see_password_btn" onclick="toggle_password(@user.Id)">
                             <i class="fas fa-eye" title="Удерживайте, чтобы увидеть пароль."></i>
                         </button>
                         <button class="btn btn-outline-secondary action-icon" data-toggle="ajax-modal" data-target="#AddUser" data-url="@Url.Action($"Edit/{user.Id}")">
@@ -57,4 +59,15 @@ else
         }
         </tbody>
 </table>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        function toggle_password(id) {
+            let name = "#user_password_" + id;
+            let type = $(name).attr('type');
+            let new_type = type == "text" ? "password" : "text";
+            $(name).attr('type', new_type);
+        }
+    </script>
 }
