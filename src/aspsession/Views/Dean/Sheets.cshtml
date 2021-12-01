@@ -5,7 +5,12 @@
     Layout = "_DeanLayout";
 }
 
-<h3>Список ведомостей</h3>
+<div class="action-area">
+    <a class="btn btn-outline-success action-icon" href="/Dean/CreateSheet" title="Нажмите, чтобы добавить новую ведомость.">
+        <i class="fas fa-plus-circle"></i>
+    </a>
+    <h3>Список ведомостей</h3>
+</div>
 
 @if (Model == null)
 {
@@ -16,13 +21,14 @@ else
 <table class="table">
     <thead>
         <tr>
-            <th>Id</th>
-            <th>Тип</th>
-            <th>Номер семестра</th>
+            <th>Номер ведомости</th>
+            <th>Семестр</th>
             <th>Год</th>
+            <th>Тип</th>
             <th>Группа</th>
             <th>Дисциплина</th>
             <th>Преподаватель</th>
+            <th>Статус ведомости</th>
         </tr>
     </thead>
     <tbody>
@@ -30,12 +36,29 @@ else
         {
             <tr>
                 <td>@sheet.Id</td>
-                <td>@sheet.Type</td>
-                <td>@sheet.TermNumber</td>
+                <td>@sheet.Term</td>
                 <td>@sheet.Year</td>
+                <td>@sheet.Type</td>
                 <td>@sheet.Group</td>
                 <td>@sheet.Discipline</td>
                 <td>@sheet.Teacher</td>
+                <td>@sheet.Status</td>
+                <td>
+                    <div class="action-area">
+                        <a href='@Url.Action("UploadSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-success action-icon" title="Нажмите, чтобы отправить ведомость преподавателю.">
+                            <i class="fas fa-upload"></i>
+                        </a>
+                        <a href='@Url.Action("InfoAboutSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-primary action-icon" title="Нажмите, чтобы посмотреть подробную информацию о ведомости.">
+                            <i class="fas fa-info"></i>
+                        </a>
+                        <a href='@Url.Action("EditSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-secondary action-icon" title="Нажмите, чтобы редактировать ведомость.">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                        <button class="btn btn-outline-danger action-icon" title="Нажмите, чтобы удалить ведомость.">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
             </tr>
         }
         </tbody>

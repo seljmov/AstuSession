@@ -1,7 +1,9 @@
 ﻿using aspsession.Contexts;
+using aspsession.Models;
 using aspsession.ViewModels.Dean;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace aspsession.Controllers;
 
@@ -40,25 +42,140 @@ public class DeanController : Controller
     public IActionResult Sheets()
     {
         var sheets = _context.Sheets.ToList();
+        var statuses = _context.SheetStatuses.AsEnumerable().ToDictionary(status => status.Id, status => status.Name);
+        var histories = _context.SheetHistories.AsEnumerable()
+            .GroupBy(x => x.SheetId)
+            .ToDictionary(x => x.Key, x => x.ToList());
 
         IList<SheetViewModel> model = null;
 
         if (sheets.Any())
         {
-            // model = new List<SheetViewModel>();
             model = sheets.Select(sheet => new SheetViewModel 
             {
                 Id = sheet.Id,
                 Type = _context.SheetTypes.ToList().FirstOrDefault(type => type.Id == sheet.TypeId).Name,
-                TermNumber = sheet.TermNumber,
+                Term = sheet.TermNumber == 1 ? "Осенний" : "Весенний",
                 Year = sheet.Year,
-                Group = _context.Groups.ToList().FirstOrDefault(group => group.Id == sheet.GroupId).Name,
+                Group = UniversityHierarchyByGroupId(sheet.GroupId).Group,
                 Discipline = _context.Disciplines.ToList().FirstOrDefault(disc => disc.Id == sheet.DisciplineId).Name,
                 Teacher = _context.Teachers.ToList().FirstOrDefault(teacher => teacher.Id == sheet.TeacherId).Name,
+                Status = statuses[histories[sheet.Id].Last().StatusId]
             }).ToList();
         }
 
         return View(model);
+    }
+
+    /// <summary>
+    /// Страница создания ведомости
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult CreateSheet()
+    {
+        var types = _context.SheetTypes
+            .ToDictionary(type => type.Id, type => type.Name)
+            .Select(type => new SelectListItem { Value = type.Key.ToString(), Text = type.Value })
+            .ToList();
+
+        var groups = _context.Groups
+            .ToDictionary(group => group.Id, group => GetGroupNameById(group.Id))
+            .Select(group => new SelectListItem { Value = group.Key.ToString(), Text = group.Value })
+            .ToList();
+
+        var disciplines = _context.Disciplines
+            .ToDictionary(disc => disc.Id, disc => disc.Name)
+            .Select(disc => new SelectListItem { Value = disc.Key.ToString(), Text = disc.Value })
+            .ToList();
+
+        var teachers = _context.Teachers
+            .ToDictionary(teacher => teacher.Id, teacher => teacher.Name)
+            .Select(teacher => new SelectListItem { Value = teacher.Key.ToString(), Text = teacher.Value })
+            .ToList();
+
+        var currMonth = Convert.ToInt32(DateTime.Now.ToString("MM"));
+        var currYear = Convert.ToInt32(DateTime.Now.ToString("yyyy"));
+
+        var model = new CreateSheetViewModal 
+        { 
+            TermNumber = currMonth >= 2 && currMonth <= 6 ? 2 : 1, // Если месяц в промежутке февраль-июнь, то 2 семестр, иначе - 1
+            Types = types,
+            Year = currYear,
+            Groups = groups,
+            Disciplines = disciplines,
+            Teachers = teachers
+        };
+
+        return View(model);
+    }
+
+    /// <summary>
+    /// Страница создания ведомости
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost]
+    public IActionResult CreateSheet(CreateSheetViewModal createSheet)
+    {
+        var sheet = new Sheet
+        {
+            TypeId = createSheet.SelectedType,
+            TermNumber = createSheet.TermNumber,
+            Year = createSheet.Year,
+            GroupId = createSheet.SelectedGroup,
+            DisciplineId = createSheet.SelectedDiscipline,
+            TeacherId = createSheet.SelectedTeacher
+        };
+
+        _context.Sheets.Add(sheet);
+        // Сохраняем, чтобы мочь получить id последней добавленной ведомости
+        _context.SaveChanges();
+
+        var history = new SheetHistory
+        {
+            SheetId = _context.Sheets.ToList().Last().Id,
+            StatusId = 1, // Статус - создана
+            DateCreated = DateTime.Now.ToString("f"),
+        };
+
+        _context.SheetHistories.Add(history);
+        _context.SaveChanges();
+
+        return RedirectToAction("Sheets", "Dean");
+    }
+
+    [HttpGet]
+    public IActionResult UploadSheet(int id)
+    {
+        var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
+        var history = new SheetHistory
+        {
+            SheetId = sheet.Id,
+            StatusId = 2,
+            DateCreated = DateTime.Now.ToString("f"),
+        };
+
+        _context.SheetHistories.Add(history);
+        _context.SaveChanges();
+
+        return RedirectToAction("Sheets", "Dean");
+    }
+
+    [HttpGet]
+    public IActionResult InfoAboutSheet(int id)
+    {
+        var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
+        var history = new SheetHistory
+        {
+            SheetId = sheet.Id,
+            StatusId = 2,
+            DateCreated = DateTime.Now.ToString("f"),
+        };
+
+        _context.SheetHistories.Add(history);
+        _context.SaveChanges();
+
+        return RedirectToAction("Sheets", "Dean");
     }
 
     /// <summary>
@@ -103,13 +220,24 @@ public class DeanController : Controller
         return View(model);
     }
 
+    private string GetGroupNameById(int groupId)
+    {
+        var group = _context.Groups.ToList().FirstOrDefault(group => group.Id == groupId);
+        var direction = _context.Directions.ToList().FirstOrDefault(direc => direc.Id == group.DirectionId);
+        string groupName = $"{direction.ShortName}-{group.Course}1";
+
+        return groupName;
+    }
+
     private (string Group, string Departments, string Institute) UniversityHierarchyByGroupId(int groupId)
     {
         var group = _context.Groups.ToList().FirstOrDefault(group => group.Id == groupId);
-        var departments = _context.Departments.ToList().FirstOrDefault(dep => dep.Id == group.DepartmentsId);
+        var direction = _context.Directions.ToList().FirstOrDefault(direc => direc.Id == group.DirectionId);
+        var departments = _context.Departments.ToList().FirstOrDefault(dep => dep.Id == direction.DepartmentId);
         var institute = _context.Institutes.ToList().FirstOrDefault(inst => inst.Id == departments.InstituteId);
 
-        return (group.Name, departments.Name, institute.Name);
+        string groupName = $"{direction.ShortName}-{group.Course}1";
+        return (groupName, departments.Name, institute.Name);
     }
 
     private (string Departments, string Institute) UniversityHierarchyByDepartmentId(int departmentId)

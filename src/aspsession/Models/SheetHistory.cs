@@ -23,5 +23,5 @@ public class SheetHistory
     /// <summary>
     /// Дата создания записи
     /// </summary>
-    public DateTime DateCreated { get; set; }
+    public string DateCreated { get; set; }
 }

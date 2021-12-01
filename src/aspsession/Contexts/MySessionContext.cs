@@ -40,6 +40,11 @@ public class MySessionContext : DbContext
     public DbSet<Discipline> Disciplines { get; set; }
 
     /// <summary>
+    /// Коллекция направлений
+    /// </summary>
+    public DbSet<Direction> Directions { get; set; }
+
+    /// <summary>
     /// Коллекция групп
     /// </summary>
     public DbSet<Group> Groups { get; set; }
@@ -68,6 +73,11 @@ public class MySessionContext : DbContext
     /// Коллекция преподавателей
     /// </summary>
     public DbSet<Teacher> Teachers { get; set; }
+
+    /// <summary>
+    /// Коллекция отношений преподаватель-дисциплина
+    /// </summary>
+    public DbSet<TeacherDisciplinesRelation> TeacherDisciplinesRelations { get; set; }
 
     /// <summary>
     /// Коллекция студентов

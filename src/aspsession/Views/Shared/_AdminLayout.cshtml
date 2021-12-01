@@ -34,6 +34,12 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Users">Пользователи</a>
                         </li>
                     </ul>
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item d-flex justify-content-center align-items-center">
+                            <h6 class="mb-0">@User.Identity.Name</h6>
+                            <a class="nav-link text-dark ms-1" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>

@@ -11,12 +11,12 @@ public class Group
     public int Id { get; set; }
 
     /// <summary>
-    /// Название
+    /// Идентификатор направления
     /// </summary>
-    public string Name { get; set; }
+    public int DirectionId { get; set; }
 
     /// <summary>
-    /// Кафедра
+    /// Курс
     /// </summary>
-    public int DepartmentsId { get; set; }
+    public int Course { get; set; }
 }

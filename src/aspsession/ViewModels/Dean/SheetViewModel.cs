@@ -16,9 +16,9 @@ public class SheetViewModel
     public string Type { get; set; }
 
     /// <summary>
-    /// Номер семестра
+    /// Семестр (Осенний/весенний)
     /// </summary>
-    public int TermNumber { get; set; }
+    public string Term { get; set; }
 
     /// <summary>
     /// Год
@@ -39,4 +39,9 @@ public class SheetViewModel
     /// Преподаватель
     /// </summary>
     public string Teacher { get; set; }
+
+    /// <summary>
+    /// Актуальный статус заявки
+    /// </summary>
+    public string Status { get; set; }
 }
