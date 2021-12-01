@@ -135,6 +135,7 @@ public class DeanController : Controller
         {
             SheetId = _context.Sheets.ToList().Last().Id,
             StatusId = 1, // Статус - создана
+            UserId = _context.Users.ToList().FirstOrDefault(user => user.Email == User.Identity.Name).Id,
             DateCreated = DateTime.Now.ToString("f"),
         };
 
@@ -152,6 +153,7 @@ public class DeanController : Controller
         {
             SheetId = sheet.Id,
             StatusId = 2,
+            UserId = _context.Users.ToList().FirstOrDefault(user => user.Email == User.Identity.Name).Id,
             DateCreated = DateTime.Now.ToString("f"),
         };
 
@@ -162,17 +164,91 @@ public class DeanController : Controller
     }
 
     [HttpGet]
-    public IActionResult InfoAboutSheet(int id)
+    public IActionResult DetailsSheet(int id)
     {
         var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
-        var history = new SheetHistory
+        var histories = _context.SheetHistories.Where(x => x.SheetId == id).ToList();
+        var historiesvm = histories.Select(history => new SheetHistoryViewModel
         {
-            SheetId = sheet.Id,
-            StatusId = 2,
-            DateCreated = DateTime.Now.ToString("f"),
+            Id = history.Id,
+            Status = _context.SheetStatuses.ToList().FirstOrDefault(status => status.Id == history.StatusId).Name,
+            UserEmail = _context.Users.ToList().FirstOrDefault(user => user.Id == history.UserId).Email,
+            DateCreated = history.DateCreated,
+        }).ToList();
+
+        var students = _context.Students.Where(student => student.GroupId == sheet.GroupId).ToList();
+        var studentsvm = students.Select(student => new StudentViewModel 
+        {
+            Id = student.Id,
+            BookNumber = student.BookNumber,
+            Name = student.Name,
+        }).ToList();
+
+        var model = new DetailSheetViewModel 
+        {
+            Id = sheet.Id,
+            Type = _context.SheetTypes.ToList().FirstOrDefault(type => type.Id == sheet.TypeId).Name,
+            Term = sheet.TermNumber == 1 ? "Осенний" : "Весенний",
+            Year = sheet.Year,
+            Group = GetGroupNameById(sheet.GroupId),
+            Students = studentsvm,
+            Discipline = _context.Disciplines.ToList().FirstOrDefault(disc => disc.Id == sheet.DisciplineId).Name,
+            Teacher = _context.Teachers.ToList().FirstOrDefault(teacher => teacher.Id == sheet.TeacherId).Name,
+            Histories = historiesvm,
         };
 
-        _context.SheetHistories.Add(history);
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult EditSheet(int id)
+    {
+        var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
+        var types = _context.SheetTypes
+            .ToDictionary(type => type.Id, type => type.Name)
+            .Select(type => new SelectListItem { Value = type.Key.ToString(), Text = type.Value })
+            .ToList();
+
+        var groups = _context.Groups
+            .ToDictionary(group => group.Id, group => GetGroupNameById(group.Id))
+            .Select(group => new SelectListItem { Value = group.Key.ToString(), Text = group.Value })
+            .ToList();
+
+        var disciplines = _context.Disciplines
+            .ToDictionary(disc => disc.Id, disc => disc.Name)
+            .Select(disc => new SelectListItem { Value = disc.Key.ToString(), Text = disc.Value })
+            .ToList();
+
+        var teachers = _context.Teachers
+            .ToDictionary(teacher => teacher.Id, teacher => teacher.Name)
+            .Select(teacher => new SelectListItem { Value = teacher.Key.ToString(), Text = teacher.Value })
+            .ToList();
+
+        var currMonth = Convert.ToInt32(DateTime.Now.ToString("MM"));
+        var currYear = Convert.ToInt32(DateTime.Now.ToString("yyyy"));
+
+        var model = new CreateSheetViewModal
+        {
+            TermNumber = currMonth >= 2 && currMonth <= 6 ? 2 : 1, // Если месяц в промежутке февраль-июнь, то 2 семестр, иначе - 1
+            Types = types,
+            Year = currYear,
+            Groups = groups,
+            Disciplines = disciplines,
+            Teachers = teachers,
+            SelectedType = sheet.TypeId,
+            SelectedGroup = sheet.GroupId,
+            SelectedDiscipline = sheet.DisciplineId,
+            SelectedTeacher = sheet.TeacherId,
+        };
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult DeleteSheet(int id)
+    {
+        var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
+        _context.Sheets.Remove(sheet);
         _context.SaveChanges();
 
         return RedirectToAction("Sheets", "Dean");

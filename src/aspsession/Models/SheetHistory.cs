@@ -21,6 +21,11 @@ public class SheetHistory
     public int StatusId { get; set; }
 
     /// <summary>
+    /// Идентификатор создателя истории
+    /// </summary>
+    public int UserId { get; set; }
+
+    /// <summary>
     /// Дата создания записи
     /// </summary>
     public string DateCreated { get; set; }
