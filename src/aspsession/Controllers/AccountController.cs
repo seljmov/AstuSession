@@ -70,9 +70,9 @@ public class AccountController : Controller
                     await Authenticate(user.Email, role);
                     return user.RoleId switch
                     {
-                        1 => RedirectToAction("Users", "Admin"),    // Администратор
-                        2 => RedirectToAction("Sheets", "Dean"),    // Сотрудник деканата
-                        3 => RedirectToAction("Index", "Home"),     // Преподаватель
+                        1 => RedirectToAction("Index", "Admin"),    // Администратор
+                        2 => RedirectToAction("Index", "Dean"),    // Сотрудник деканата
+                        3 => RedirectToAction("Index", "Teacher"),     // Преподаватель
                         _ => throw new NotImplementedException(),
                     };
                 }

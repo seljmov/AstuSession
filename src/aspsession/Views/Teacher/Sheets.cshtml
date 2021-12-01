@@ -1,0 +1,55 @@
+﻿@model IList<aspsession.ViewModels.Dean.SheetViewModel>
+
+@{
+    ViewData["Title"] = "Мои ведомости";
+    Layout = "_TeacherLayout";
+}
+
+<div class="action-area">
+    <h3>Мои ведомости</h3>
+</div>
+
+@if (Model == null)
+{
+    <p><em>Список ведомостей пуст...</em></p>
+}
+else
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>Номер ведомости</th>
+            <th>Семестр</th>
+            <th>Год</th>
+            <th>Тип</th>
+            <th>Группа</th>
+            <th>Дисциплина</th>
+            <th>Статус ведомости</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sheet in Model.Where(x => x.Status != "Создана"))
+        {
+            <tr>
+                <td>@sheet.Id</td>
+                <td>@sheet.Term</td>
+                <td>@sheet.Year</td>
+                <td>@sheet.Type</td>
+                <td>@sheet.Group</td>
+                <td>@sheet.Discipline</td>
+                <td>@sheet.Status</td>
+                <td>
+                    <div class="action-area">
+                        <a href='@Url.Action("DetailsSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-primary action-icon" title="Нажмите, чтобы посмотреть подробную информацию о ведомости.">
+                            <i class="fas fa-info"></i>
+                        </a>
+                        <a href='@Url.Action("EditSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-secondary action-icon" title="Нажмите, чтобы редактировать ведомость.">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+</table>
+}

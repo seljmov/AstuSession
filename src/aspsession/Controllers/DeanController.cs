@@ -42,15 +42,16 @@ public class DeanController : Controller
     public IActionResult Sheets()
     {
         var sheets = _context.Sheets.ToList();
-        var statuses = _context.SheetStatuses.AsEnumerable().ToDictionary(status => status.Id, status => status.Name);
-        var histories = _context.SheetHistories.AsEnumerable()
-            .GroupBy(x => x.SheetId)
-            .ToDictionary(x => x.Key, x => x.ToList());
 
         IList<SheetViewModel> model = null;
 
         if (sheets.Any())
         {
+            var statuses = _context.SheetStatuses.AsEnumerable().ToDictionary(status => status.Id, status => status.Name);
+            var histories = _context.SheetHistories.AsEnumerable()
+                .GroupBy(x => x.SheetId)
+                .ToDictionary(x => x.Key, x => x.ToList());
+
             model = sheets.Select(sheet => new SheetViewModel 
             {
                 Id = sheet.Id,
