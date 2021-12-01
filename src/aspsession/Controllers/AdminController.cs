@@ -30,7 +30,7 @@ public class AdminController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        return RedirectToAction("Users", "Admin");
+        return RedirectToAction("Users");
     }
 
     [HttpGet]

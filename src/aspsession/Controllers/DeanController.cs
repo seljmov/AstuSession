@@ -31,7 +31,7 @@ public class DeanController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        return RedirectToAction("Sheets", "Dean");
+        return RedirectToAction("Sheets");
     }
 
     /// <summary>
@@ -143,7 +143,7 @@ public class DeanController : Controller
         _context.SheetHistories.Add(history);
         _context.SaveChanges();
 
-        return RedirectToAction("Sheets", "Dean");
+        return RedirectToAction("Sheets");
     }
 
     [HttpGet]
@@ -161,7 +161,7 @@ public class DeanController : Controller
         _context.SheetHistories.Add(history);
         _context.SaveChanges();
 
-        return RedirectToAction("Sheets", "Dean");
+        return RedirectToAction("Sheets");
     }
 
     [HttpGet]
@@ -252,7 +252,7 @@ public class DeanController : Controller
         _context.Sheets.Remove(sheet);
         _context.SaveChanges();
 
-        return RedirectToAction("Sheets", "Dean");
+        return RedirectToAction("Sheets");
     }
 
     /// <summary>
