@@ -68,6 +68,7 @@ public class TeacherController : Controller
         return View(model);
     }
 
+    [HttpGet]
     public IActionResult ConfirmSheets(string forms)
     {
         var sheets = JsonConvert.DeserializeObject<IList<SheetViewModel>>(forms);
@@ -89,6 +90,34 @@ public class TeacherController : Controller
         _context.SaveChanges();
 
         return RedirectToAction("Sheets");
+    }
+
+    [HttpGet]
+    public IActionResult FillSheet(int id)
+    {
+        var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
+
+        var students = _context.Students.Where(student => student.GroupId == sheet.GroupId).ToList();
+        var studentsvm = students.Select(student => new StudentViewModel
+        {
+            Id = student.Id,
+            BookNumber = student.BookNumber,
+            Name = student.Name,
+        }).ToList();
+
+        var model = new DetailSheetViewModel
+        {
+            Id = sheet.Id,
+            Type = _context.SheetTypes.ToList().FirstOrDefault(type => type.Id == sheet.TypeId).Name,
+            Term = sheet.TermNumber == 1 ? "Осенний" : "Весенний",
+            Year = sheet.Year,
+            Group = GetGroupNameById(sheet.GroupId),
+            Students = studentsvm,
+            Discipline = _context.Disciplines.ToList().FirstOrDefault(disc => disc.Id == sheet.DisciplineId).Name,
+            Teacher = _context.Teachers.ToList().FirstOrDefault(teacher => teacher.Id == sheet.TeacherId).Name,
+        };
+
+        return View(model);
     }
 
     private string GetGroupNameById(int groupId)
