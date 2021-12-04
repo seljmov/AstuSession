@@ -9,6 +9,7 @@
     <h4 class="mt-4 mb-2">Добавить новую ведомость</h4>
 
     <form asp-action="EditSheet" asp-controller="Dean">
+        <input type="hidden" asp-for="Id" />
         <div class="form-group mb-3">
             <label asp-for="TermNumber">Семестр</label>
             <input readonly="readonly" asp-for="TermNumber" class="form-control">

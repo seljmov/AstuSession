@@ -245,6 +245,25 @@ public class DeanController : Controller
         return View(model);
     }
 
+    public IActionResult EditSheet(CreateSheetViewModal editsheet)
+    {
+        var updsheet = new Sheet
+        {
+            Id = editsheet.Id,
+            TypeId = editsheet.SelectedType,
+            TermNumber = editsheet.TermNumber,
+            Year = editsheet.Year,
+            GroupId = editsheet.SelectedGroup,
+            DisciplineId = editsheet.SelectedDiscipline,
+            TeacherId = editsheet.SelectedTeacher
+        };
+
+        _context.Sheets.Update(updsheet);
+        _context.SaveChanges();
+
+        return RedirectToAction("Sheets");
+    }
+
     [HttpGet]
     public IActionResult DeleteSheet(int id)
     {
