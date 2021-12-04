@@ -1,7 +1,9 @@
 ﻿using aspsession.Contexts;
+using aspsession.Models;
 using aspsession.ViewModels.Dean;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace aspsession.Controllers;
 
@@ -57,9 +59,36 @@ public class TeacherController : Controller
                 Discipline = _context.Disciplines.ToList().FirstOrDefault(disc => disc.Id == sheet.DisciplineId).Name,
                 Status = statuses[histories[sheet.Id].Last().StatusId]
             }).ToList();
+
+            var fixmodel = model.ToList();
+            fixmodel.RemoveAll(x => x.Status == "Создана");
+            model = fixmodel;
         }
 
         return View(model);
+    }
+
+    public IActionResult ConfirmSheets(string forms)
+    {
+        var sheets = JsonConvert.DeserializeObject<IList<SheetViewModel>>(forms);
+        var user = _context.Users.ToList().First(x => x.Email == User.Identity.Name);
+        var teacher = _context.Teachers.ToList().First(x => x.Name == user.Name);
+
+        foreach (var sheet in sheets)
+        {
+            var new_history = new SheetHistory 
+            {
+                SheetId = sheet.Id,
+                StatusId = 3, // Статус - Получение подтверждено
+                UserId = user.Id,
+                DateCreated = DateTime.Now.ToString("f"),
+            };
+
+            _context.SheetHistories.Add(new_history);
+        }
+        _context.SaveChanges();
+
+        return RedirectToAction("Sheets");
     }
 
     private string GetGroupNameById(int groupId)
