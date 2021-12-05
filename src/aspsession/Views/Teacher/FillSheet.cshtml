@@ -32,7 +32,7 @@
                     <th>№</th>
                     <th>ФИО</th>
                     <th>Номер зачетной книжки</th>
-                    <th>Результат</th>
+                    <th>Результат*</th>
                 </tr>
             </thead>
             <tbody>
@@ -61,5 +61,27 @@
                 }
                 </tbody>
         </table>
+        <div class="mb-4">
+            <b>*Оставьте поле незаполненным, если студент не явился на проверку знаний.</b>
+        </div>
+        <button id="save_button" class="btn btn-success">
+            <i class="fas fa-check"></i> Сохранить и отправить
+        </button>
     </div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#save_button').on('click', function () {
+                let values = [];
+                let inputs = $('input[class="fill-result"]');
+                for (i = 0; i < inputs.length; i++) {
+                    values.push(inputs[i].value);
+                }
+                // console.log(inputs);
+                // console.log(values);
+            });
+        });
+    </script>
+}
