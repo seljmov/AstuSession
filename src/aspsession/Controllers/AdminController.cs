@@ -3,6 +3,7 @@ using aspsession.Models;
 using aspsession.ViewModels.Admin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace aspsession.Controllers;
 
@@ -77,10 +78,10 @@ public class AdminController : Controller
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public IActionResult Create()
+    public IActionResult CreateUser()
     {
         var user = new User();
-        return PartialView("_CreateUserModalPartial", user);
+        return View(user);
     }
 
     /// <summary>
@@ -89,11 +90,35 @@ public class AdminController : Controller
     /// <param name="user">Данные пользователя</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Create(User user)
+    public async Task<IActionResult> CreateUser(User user)
     {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return PartialView("_CreateUserModalPartial", user);
+        try
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            var message = ex.InnerException.Message;
+            
+            if (message.ToLower().Contains("error number 1"))
+            {
+                ModelState.AddModelError("", "Недопустимое значение электронной почты!");
+            }
+            else if (message.ToLower().Contains("error number 2"))
+            {
+                ModelState.AddModelError("", "Недопустимое значение для пароля! Минимальная длина не менее 8 символов.");
+            }
+            else if (message.ToLower().Contains("error number 3"))
+            {
+                ModelState.AddModelError("", "Пользователь с таким адресом электронной почты уже существует в системе!");
+            }
+        }
+
+        if (!ModelState.IsValid)
+            return View(user);
+
+        return RedirectToAction("Users");
     }
 
     /// <summary>
@@ -102,10 +127,10 @@ public class AdminController : Controller
     /// <param name="id">Идентификатор пользователя</param>
     /// <returns></returns>
     [HttpGet]
-    public IActionResult Edit(int id)
+    public IActionResult EditUser(int id)
     {
         var user = _context.Users.FirstOrDefault(user => user.Id == id);
-        return PartialView("_EditUserModalPartial", user);
+        return View(user);
     }
 
     /// <summary>
@@ -114,11 +139,35 @@ public class AdminController : Controller
     /// <param name="user">Данные пользователя</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Edit(User user)
+    public async Task<IActionResult> EditUser(User user)
     {
-        _context.Users.Update(user);
-        await _context.SaveChangesAsync();
-        return PartialView("_EditUserModalPartial", user);
+        try
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            var message = ex.InnerException.Message;
+
+            if (message.ToLower().Contains("error number 1"))
+            {
+                ModelState.AddModelError("", "Недопустимое значение электронной почты!");
+            }
+            else if (message.ToLower().Contains("error number 2"))
+            {
+                ModelState.AddModelError("", "Недопустимое значение для пароля! Минимальная длина не менее 8 символов.");
+            }
+            else if (message.ToLower().Contains("error number 3"))
+            {
+                ModelState.AddModelError("", "Пользователь с таким адресом электронной почты уже существует в системе!");
+            }
+        }
+
+        if (!ModelState.IsValid)
+            return View(user);
+
+        return RedirectToAction("Users");
     }
 
     /// <summary>

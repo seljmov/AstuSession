@@ -10,7 +10,7 @@ $(function () {
         let decodeUrl = decodeURIComponent(url); 
         $.get(decodeUrl).done(function (data) {
             PlaceHolderElement.html(data);
-            PlaceHolderElement.find('.modal').modal('show')
+            PlaceHolderElement.find('.modal').modal('show');
         });
     });
 
@@ -25,6 +25,7 @@ $(function () {
     });
 });
 
+/*
 $(function () {
     let PlaceHolderElement = $('#PlaceHolderHere')
     $('button[data-target="#CreateSheet"]').click(function (event) {
@@ -46,3 +47,4 @@ $(function () {
         });
     });
 });
+*/
