@@ -1,4 +1,4 @@
-﻿@model aspsession.ViewModels.Dean.DetailSheetViewModel
+﻿@model aspsession.ViewModels.Teacher.FillSheetViewModel
 
 @{
     ViewData["Title"] = "Заполнить ведомость";
@@ -45,13 +45,20 @@
                         <td>
                             @if (@Model.Type == "Экзамен" || @Model.Type == "Дифференцированный зачет")
                             {
-                                <input id="result_@Model.Students[i].Id" class="fill-result" type="text" />
+                                @if (Model.Students[i].Mark == -1)
+                                {
+                                    <input min="2" max="5" id="result_@Model.Students[i].Id" class="fill-result" type="text" />
+                                }
+                                else
+                                {
+                                    <input min="2" max="5" value="@(Model.Students[i].Mark)" id="result_@Model.Students[i].Id" class="fill-result" type="text" />
+                                }
                             }
                             else
                             {
                                 <div class="form-check">
-                                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                  <label class="form-check-label" for="flexCheckDefault">
+                                  <input id="result_@Model.Students[i].Id" checked="@(Model.Students[i].Mark != -1)" class="form-check-input" type="checkbox" value="@(Model.Students[i].Mark != -1)" id="flexCheckDefault_@Model.Students[i].Id">
+                                  <label class="form-check-label" for="flexCheckDefault_@Model.Students[i].Id">
                                     Зачет
                                   </label>
                                 </div>
@@ -61,9 +68,12 @@
                 }
                 </tbody>
         </table>
-        <div class="mb-4">
-            <b>*Оставьте поле незаполненным, если студент не явился на проверку знаний.</b>
-        </div>
+        @if (@Model.Type == "Экзамен" || @Model.Type == "Дифференцированный зачет")
+        {
+            <div class="mb-4">
+                <b>*Оставьте поле незаполненным, если студент не явился на проверку знаний.</b>
+            </div>
+        }
         <button id="save_button" class="btn btn-success">
             <i class="fas fa-check"></i> Сохранить и отправить
         </button>
@@ -77,10 +87,37 @@
                 let values = [];
                 let inputs = $('input[class="fill-result"]');
                 for (i = 0; i < inputs.length; i++) {
-                    values.push(inputs[i].value);
+                    let num = parseInt(inputs[i].value);
+                    values.push(isNaN(num) ? -1 : num);
                 }
-                // console.log(inputs);
-                // console.log(values);
+
+                console.log(values.length);
+                if (values.length == 0) {
+                    inputs = $('input[type="checkbox"]');
+                    for (i = 0; i < inputs.length; i++) {
+                        let num = inputs[i].checked;
+                        values.push(num ? 5 : -1);
+                    }
+
+                    console.log(values);
+                }
+                
+                let mydata = {
+                    "id": @(Model.Id),
+                    "marks": values
+                };
+
+                $.post({
+                    url: "/Teacher/FillSheet/",
+                    data: mydata,
+                    success: function (response) {
+                        // $(location).prop("href", "/Teacher/Sheets/");
+                        alert("Отлично! Ведомость обновлена!");
+                    },
+                    error: function (response) {
+                        alert("error");
+                    }
+                });
             });
         });
     </script>

@@ -1,6 +1,7 @@
 ﻿using aspsession.Contexts;
 using aspsession.Models;
 using aspsession.ViewModels.Dean;
+using aspsession.ViewModels.Teacher;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -97,15 +98,19 @@ public class TeacherController : Controller
     {
         var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
 
+        var marks = _context.StudentSheetRelations
+            .Where(relation => relation.SheetId == sheet.Id)
+            .ToDictionary(x => x.StudentId, x => x.Mark);
         var students = _context.Students.Where(student => student.GroupId == sheet.GroupId).ToList();
-        var studentsvm = students.Select(student => new StudentViewModel
+        var studentsvm = students.Select(student => new StudentSheetViewModel
         {
             Id = student.Id,
             BookNumber = student.BookNumber,
             Name = student.Name,
+            Mark = marks.ContainsKey(student.Id) ? marks[student.Id] : -1
         }).ToList();
 
-        var model = new DetailSheetViewModel
+        var model = new FillSheetViewModel
         {
             Id = sheet.Id,
             Type = _context.SheetTypes.ToList().FirstOrDefault(type => type.Id == sheet.TypeId).Name,
@@ -118,6 +123,37 @@ public class TeacherController : Controller
         };
 
         return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult FillSheet(int id, List<int> marks)
+    {
+        var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
+        var students = _context.Students.Where(student => student.GroupId == sheet.GroupId).ToList();
+
+        foreach (var (item, index) in students.Select((item, index) => (item, index)))
+        {
+            var relation = new StudentSheetRelation 
+            {
+                StudentId = item.Id,
+                SheetId = sheet.Id,
+                Mark = marks[index],
+            };
+
+            if (_context.StudentSheetRelations.FirstOrDefault(x => x.SheetId == id) == null)
+            {
+                _context.StudentSheetRelations.Add(relation);
+            }
+            else
+            {
+                relation = _context.StudentSheetRelations.First(x => x.StudentId == item.Id && x.SheetId == sheet.Id);
+                relation.Mark = marks[index];
+                _context.StudentSheetRelations.Update(relation);
+            }
+        }
+
+        _context.SaveChanges();
+        return RedirectToAction("Sheets");
     }
 
     private string GetGroupNameById(int groupId)

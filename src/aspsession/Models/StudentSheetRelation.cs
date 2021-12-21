@@ -19,4 +19,9 @@ public class StudentSheetRelation
     /// Идентификатор ведомости
     /// </summary>
     public int SheetId { get; set; }
+
+    /// <summary>
+    /// Полученная оценка
+    /// </summary>
+    public int Mark { get; set; }
 }

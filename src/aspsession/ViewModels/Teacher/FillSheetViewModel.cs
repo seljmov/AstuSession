@@ -1,8 +1,8 @@
-﻿using aspsession.ViewModels.Teacher;
+﻿using aspsession.ViewModels.Dean;
 
-namespace aspsession.ViewModels.Dean;
+namespace aspsession.ViewModels.Teacher;
 
-public class DetailSheetViewModel
+public class FillSheetViewModel
 {
     /// <summary>
     /// Идентификатор ведомости
@@ -32,7 +32,7 @@ public class DetailSheetViewModel
     /// <summary>
     /// Список студентов в ведомости
     /// </summary>
-    public IList<StudentViewModel> Students { get; set; }
+    public IList<StudentSheetViewModel> Students { get; set; }
 
     /// <summary>
     /// Дисциплина
