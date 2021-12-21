@@ -156,6 +156,24 @@ public class TeacherController : Controller
         return RedirectToAction("Sheets");
     }
 
+    [HttpGet]
+    public IActionResult UploadSheet(int id)
+    {
+        var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
+        var history = new SheetHistory
+        {
+            SheetId = sheet.Id,
+            StatusId = 4,
+            UserId = _context.Users.ToList().FirstOrDefault(user => user.Email == User.Identity.Name).Id,
+            DateCreated = DateTime.Now.ToString("f"),
+        };
+
+        _context.SheetHistories.Add(history);
+        _context.SaveChanges();
+
+        return RedirectToAction("Sheets");
+    }
+
     private string GetGroupNameById(int groupId)
     {
         var group = _context.Groups.ToList().FirstOrDefault(group => group.Id == groupId);

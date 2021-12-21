@@ -96,8 +96,8 @@ else
                             <a href='@Url.Action("DetailsSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-primary action-icon" title="Нажмите, чтобы посмотреть подробную информацию о ведомости.">
                                 <i class="fas fa-info"></i>
                             </a>
-                            <a href='@Url.Action("EditSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-secondary action-icon" title="Нажмите, чтобы редактировать ведомость.">
-                                <i class="fas fa-pen"></i>
+                            <a href='@Url.Action("UploadSheet", "Teacher", new { id = sheet.Id }, null)' class="btn btn-outline-success action-icon" title="Нажмите, чтобы отправить ведомость в деканат.">
+                                <i class="fas fa-upload"></i>
                             </a>
                         </div>
                     </td>
