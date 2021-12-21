@@ -4,6 +4,7 @@ using aspsession.ViewModels.Dean;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace aspsession.Controllers;
 
@@ -118,29 +119,7 @@ public class DeanController : Controller
     [HttpPost]
     public IActionResult CreateSheet(CreateSheetViewModal createSheet)
     {
-        var sheet = new Sheet
-        {
-            TypeId = createSheet.SelectedType,
-            TermNumber = createSheet.TermNumber,
-            Year = createSheet.Year,
-            GroupId = createSheet.SelectedGroup,
-            DisciplineId = createSheet.SelectedDiscipline,
-            TeacherId = createSheet.SelectedTeacher
-        };
-
-        _context.Sheets.Add(sheet);
-        // Сохраняем, чтобы мочь получить id последней добавленной ведомости
-        _context.SaveChanges();
-
-        var history = new SheetHistory
-        {
-            SheetId = _context.Sheets.ToList().Last().Id,
-            StatusId = 1, // Статус - создана
-            UserId = _context.Users.ToList().FirstOrDefault(user => user.Email == User.Identity.Name).Id,
-            DateCreated = DateTime.Now.ToString("f"),
-        };
-
-        _context.SheetHistories.Add(history);
+        _context.Database.ExecuteSqlInterpolated($"execute InsertSheet @type = {createSheet.SelectedType}, @term = {createSheet.TermNumber}, @year = {createSheet.Year}, @group = {createSheet.SelectedGroup}, @disc = {createSheet.SelectedDiscipline}, @teacher = {createSheet.SelectedTeacher}, @user = {_context.Users.ToList().FirstOrDefault(user => user.Email == User.Identity.Name).Id}, @date = N'{DateTime.Now:f}'");
         _context.SaveChanges();
 
         return RedirectToAction("Sheets");
