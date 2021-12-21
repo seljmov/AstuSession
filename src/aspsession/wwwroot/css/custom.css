@@ -33,3 +33,11 @@
     width: 32px;
     text-align: center;
 }
+
+.simple-tab {
+    margin: 0 12px;
+}
+
+.active-tab {
+    font-weight: 700;
+}

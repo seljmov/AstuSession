@@ -61,9 +61,17 @@ public class TeacherController : Controller
                 Status = statuses[histories[sheet.Id].Last().StatusId]
             }).ToList();
 
-            var fixmodel = model.ToList();
-            fixmodel.RemoveAll(x => x.Status == "Создана");
-            model = fixmodel;
+            var list0 = model.Where(x => x.Status == "Отправлена преподавателю");
+            var list1 = model.Where(x => x.Status == "Получена преподавателем");
+            var list2 = model.Where(x => x.Status == "Отправлена на проверку");
+            var list3 = model.Where(x => x.Status == "Подтверждена");
+            List<SheetViewModel> sheets1 = new();
+            sheets1.AddRange(list0);
+            sheets1.AddRange(list1);
+            sheets1.AddRange(list2);
+            sheets1.AddRange(list3);
+
+            model = sheets1;
         }
 
         return View(model);
@@ -126,7 +134,7 @@ public class TeacherController : Controller
     }
 
     [HttpPost]
-    public IActionResult FillSheet(int id, List<int> marks)
+    public IActionResult FillSheet(int id, List<int> marks, bool send)
     {
         var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
         var students = _context.Students.Where(student => student.GroupId == sheet.GroupId).ToList();
@@ -150,6 +158,20 @@ public class TeacherController : Controller
                 relation.Mark = marks[index];
                 _context.StudentSheetRelations.Update(relation);
             }
+        }
+
+        if (send)
+        {
+            var user = _context.Users.ToList().First(x => x.Email == User.Identity.Name);
+            var history = new SheetHistory
+            {
+                SheetId = id,
+                StatusId = 4, // Статус - Отправлена на проверку
+                UserId = user.Id,
+                DateCreated = DateTime.Now.ToString("f"),
+            };
+
+            _context.SheetHistories.Add(history);
         }
 
         _context.SaveChanges();

@@ -71,18 +71,61 @@
         @if (@Model.Type == "Экзамен" || @Model.Type == "Дифференцированный зачет")
         {
             <div class="mb-4">
-                <b>*Оставьте поле незаполненным, если студент не явился на проверку знаний.</b>
+                <b>*Оставьте поле незаполненным, если студент не явился на проверку знаний</b>
             </div>
         }
-        <button id="save_button" class="btn btn-success">
-            <i class="fas fa-check"></i> Сохранить и отправить
-        </button>
+        <div class="d-flex justify-content-between">
+            <button id="save_and_send_button" class="btn btn-success">
+                <i class="fas fa-check"></i> Сохранить и отправить
+            </button>
+            <button id="save_button" class="btn btn-secondary">
+                <i class="fas fa-pen"></i> Сохранить, как черновик
+            </button>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script type="text/javascript">
         $(document).ready(function () {
+            $('#save_and_send_button').on('click', function () {
+                let values = [];
+                let inputs = $('input[class="fill-result"]');
+                for (i = 0; i < inputs.length; i++) {
+                    let num = parseInt(inputs[i].value);
+                    values.push(isNaN(num) ? -1 : num);
+                }
+
+                console.log(values.length);
+                if (values.length == 0) {
+                    inputs = $('input[type="checkbox"]');
+                    for (i = 0; i < inputs.length; i++) {
+                        let num = inputs[i].checked;
+                        values.push(num ? 5 : -1);
+                    }
+
+                    console.log(values);
+                }
+                
+                let mydata = {
+                    "id": @(Model.Id),
+                    "marks": values,
+                    "send": true
+                };
+
+                $.post({
+                    url: "/Teacher/FillSheet/",
+                    data: mydata,
+                    success: function (response) {
+                        alert("Отлично! Ведомость сохранена и отправлена на проверку!");
+                        $(location).prop("href", "/Teacher/Sheets/");
+                    },
+                    error: function (response) {
+                        alert("Что-то пошло не так... Попробуйте снова!");
+                    }
+                });
+            });
+
             $('#save_button').on('click', function () {
                 let values = [];
                 let inputs = $('input[class="fill-result"]');
@@ -104,18 +147,19 @@
                 
                 let mydata = {
                     "id": @(Model.Id),
-                    "marks": values
+                    "marks": values,
+                    "send": false
                 };
 
                 $.post({
                     url: "/Teacher/FillSheet/",
                     data: mydata,
                     success: function (response) {
-                        // $(location).prop("href", "/Teacher/Sheets/");
-                        alert("Отлично! Ведомость обновлена!");
+                        alert("Отлично! Ведомость сохранена как черновик! Вы можете вернуться к редактированию в любое время.");
+                        $(location).prop("href", "/Teacher/Sheets/");
                     },
                     error: function (response) {
-                        alert("error");
+                        alert("Что-то пошло не так... Попробуйте снова!");
                     }
                 });
             });

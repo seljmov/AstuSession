@@ -78,7 +78,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var sheet in Model.Where(x => x.Status != "Отправлена преподавателю"))
+            @foreach (var sheet in Model.Where(sheet => sheet.Status != "Отправлена преподавателю"))
             {
                 <tr>
                     <td>@sheet.Id</td>
@@ -90,15 +90,21 @@ else
                     <td>@sheet.Status</td>
                     <td>
                         <div class="action-area">
-                            <a href='@Url.Action("FillSheet", "Teacher", new { id = sheet.Id }, null)' class="btn btn-outline-success action-icon" title="Нажмите, чтобы заполнить ведомость.">
-                                <i class="fas fa-file-signature"></i>
-                            </a>
+                            @if (sheet.Status == "Получена преподавателем")
+                            {
+                                <a href='@Url.Action("FillSheet", "Teacher", new { id = sheet.Id }, null)' class="btn btn-outline-secondary action-icon" title="Нажмите, чтобы заполнить ведомость.">
+                                    <i class="fas fa-file-signature"></i>
+                                </a>
+                            }
                             <a href='@Url.Action("DetailsSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-primary action-icon" title="Нажмите, чтобы посмотреть подробную информацию о ведомости.">
                                 <i class="fas fa-info"></i>
                             </a>
-                            <a href='@Url.Action("UploadSheet", "Teacher", new { id = sheet.Id }, null)' class="btn btn-outline-success action-icon" title="Нажмите, чтобы отправить ведомость в деканат.">
-                                <i class="fas fa-upload"></i>
-                            </a>
+                            @if (sheet.Status == "Получена преподавателем")
+                            {
+                                <a href='@Url.Action("UploadSheet", "Teacher", new { id = sheet.Id }, null)' class="btn btn-outline-success action-icon" title="Нажмите, чтобы отправить ведомость в деканат.">
+                                    <i class="fas fa-upload"></i>
+                                </a>
+                            }
                         </div>
                     </td>
                 </tr>
