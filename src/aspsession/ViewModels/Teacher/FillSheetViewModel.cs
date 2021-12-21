@@ -1,4 +1,4 @@
-﻿using aspsession.ViewModels.Dean;
+﻿using aspsession.ViewModels.Shared;
 
 namespace aspsession.ViewModels.Teacher;
 
@@ -43,9 +43,4 @@ public class FillSheetViewModel
     /// Преподаватель
     /// </summary>
     public string Teacher { get; set; }
-
-    /// <summary>
-    /// История ведомости
-    /// </summary>
-    public IList<SheetHistoryViewModel> Histories { get; set; }
 }

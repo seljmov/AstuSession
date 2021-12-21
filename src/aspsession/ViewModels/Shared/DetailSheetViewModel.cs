@@ -1,6 +1,6 @@
-﻿using aspsession.ViewModels.Teacher;
+﻿using aspsession.ViewModels.Dean;
 
-namespace aspsession.ViewModels.Dean;
+namespace aspsession.ViewModels.Shared;
 
 public class DetailSheetViewModel
 {

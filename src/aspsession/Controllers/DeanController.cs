@@ -1,7 +1,7 @@
 ﻿using aspsession.Contexts;
 using aspsession.Models;
 using aspsession.ViewModels.Dean;
-using aspsession.ViewModels.Teacher;
+using aspsession.ViewModels.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

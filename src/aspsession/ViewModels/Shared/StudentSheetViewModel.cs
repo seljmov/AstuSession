@@ -1,4 +1,4 @@
-﻿namespace aspsession.ViewModels.Teacher;
+﻿namespace aspsession.ViewModels.Shared;
 
 public class StudentSheetViewModel
 {
