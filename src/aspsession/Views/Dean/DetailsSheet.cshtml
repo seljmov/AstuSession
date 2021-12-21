@@ -32,15 +32,33 @@
                     <th>№</th>
                     <th>ФИО</th>
                     <th>Номер зачетной книжки</th>
+                    <th>Результат</th>
                 </tr>
             </thead>
             <tbody>
-                @for (var i = 0; i < Model.Students.Count; i++)
+                @foreach (var (student, index) in @Model.Students.Select((student, index) => (student, index)))
                 {
                     <tr>
-                        <td>@(i+1)</td>
-                        <td>@Model.Students[i].Name</td>
-                        <td>@Model.Students[i].BookNumber</td>
+                        <td>@(index + 1)</td>
+                        <td>@student.Name</td>
+                        <td>@student.BookNumber</td>
+                        <td>
+                            @if (student.Mark == 0)
+                            {
+                                <p>-</p>
+                            }
+                            else
+                            {
+                                @if (@Model.Type == "Экзамен" || @Model.Type == "Дифференцированный зачет")
+                                {
+                                    @(student.Mark == -1 ? "Не явка" : student.Mark)
+                                }
+                                else
+                                {
+                                    @(student.Mark == -1 ? "Не зачет" : "Зачет")
+                                }
+                            }
+                        </td>
                     </tr>
                 }
                 </tbody>

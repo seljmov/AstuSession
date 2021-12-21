@@ -32,7 +32,7 @@ public class DetailSheetViewModel
     /// <summary>
     /// Список студентов в ведомости
     /// </summary>
-    public IList<StudentViewModel> Students { get; set; }
+    public IList<StudentSheetViewModel> Students { get; set; }
 
     /// <summary>
     /// Дисциплина

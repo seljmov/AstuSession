@@ -1,6 +1,7 @@
 ﻿using aspsession.Contexts;
 using aspsession.Models;
 using aspsession.ViewModels.Dean;
+using aspsession.ViewModels.Teacher;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -156,12 +157,16 @@ public class DeanController : Controller
             DateCreated = history.DateCreated,
         }).ToList();
 
+        var marks = _context.StudentSheetRelations
+            .Where(relation => relation.SheetId == sheet.Id)
+            .ToDictionary(x => x.StudentId, x => x.Mark);
         var students = _context.Students.Where(student => student.GroupId == sheet.GroupId).ToList();
-        var studentsvm = students.Select(student => new StudentViewModel 
+        var studentsvm = students.Select(student => new StudentSheetViewModel
         {
             Id = student.Id,
             BookNumber = student.BookNumber,
             Name = student.Name,
+            Mark = marks.ContainsKey(student.Id) ? marks[student.Id] : 0
         }).ToList();
 
         var model = new DetailSheetViewModel 
