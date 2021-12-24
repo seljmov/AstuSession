@@ -258,6 +258,51 @@ public class DeanController : Controller
         return RedirectToAction("Sheets");
     }
 
+    public IActionResult ShowReport(string criteria)
+    {
+        var sheets = _context.Sheets.ToList();
+
+        var criterias = sheets.Select(sheet => new SelectListItem 
+        {
+            Value = GetTitleTermOfYear(sheet.TermNumber, sheet.Year),
+            Text = GetTitleTermOfYear(sheet.TermNumber, sheet.Year),
+        });
+
+        IEnumerable<SheetViewModel> sheetsvm = null;
+
+        if (!string.IsNullOrEmpty(criteria))
+        {
+            var suitable = sheets
+                .Where(sheet => criteria == GetTitleTermOfYear(sheet.TermNumber, sheet.Year))
+                .ToList();
+
+            var statuses = _context.SheetStatuses.AsEnumerable().ToDictionary(status => status.Id, status => status.Name);
+            var histories = _context.SheetHistories.AsEnumerable()
+                .GroupBy(x => x.SheetId)
+                .ToDictionary(x => x.Key, x => x.ToList());
+
+            sheetsvm = suitable.Select(sheet => new SheetViewModel
+            {
+                Id = sheet.Id,
+                Type = _context.SheetTypes.ToList().FirstOrDefault(type => type.Id == sheet.TypeId).Name,
+                Term = sheet.TermNumber == 1 ? "Осенний" : "Весенний",
+                Year = sheet.Year,
+                Group = UniversityHierarchyByGroupId(sheet.GroupId).Group,
+                Discipline = _context.Disciplines.ToList().FirstOrDefault(disc => disc.Id == sheet.DisciplineId).Name,
+                Teacher = _context.Teachers.ToList().FirstOrDefault(teacher => teacher.Id == sheet.TeacherId).Name,
+                Status = statuses[histories[sheet.Id].Last().StatusId]
+            }).ToList();
+        }
+
+        var model = new ShowReportViewModel
+        {
+            ReportCriterias = criterias,
+            Sheets = sheetsvm
+        };
+
+        return View(model);
+    }
+
     /// <summary>
     /// Страница преподавателей
     /// </summary>
@@ -298,6 +343,12 @@ public class DeanController : Controller
         }).ToList();
 
         return View(model);
+    }
+
+    private string GetTitleTermOfYear(int term, int year)
+    {
+        var title = term == 1 ? "Осенний" : "Весенний";
+        return $"{title} семестр {year} года";
     }
 
     private string GetGroupNameById(int groupId)
