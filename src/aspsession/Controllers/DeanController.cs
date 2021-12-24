@@ -262,7 +262,7 @@ public class DeanController : Controller
     {
         var sheets = _context.Sheets.ToList();
 
-        var criterias = sheets.Select(sheet => new SelectListItem 
+        var criteriasvm = sheets.Select(sheet => new SelectListItem 
         {
             Value = GetTitleTermOfYear(sheet.TermNumber, sheet.Year),
             Text = GetTitleTermOfYear(sheet.TermNumber, sheet.Year),
@@ -296,7 +296,7 @@ public class DeanController : Controller
 
         var model = new ShowReportViewModel
         {
-            ReportCriterias = criterias,
+            ReportCriterias = criteriasvm,
             Sheets = sheetsvm
         };
 

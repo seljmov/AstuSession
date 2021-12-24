@@ -2,14 +2,14 @@
 
 @{
     ViewData["Title"] = "Отчет по семестрам";
-    Layout = "_DeanLayout";
+    Layout = "_TeacherLayout";
 }
 
 <h3>Отчет</h3>
 
 <div class="col-2 mb-4">
     <label>Выберите семестр</label>
-    <select id="SelectedCriteria" asp-items="Model.ReportCriterias" class="form-select mb-2"></select>
+    <select id="SelectedCriteria" asp-items="Model.ReportCriterias" class="form-select"></select>
     <button id="get_report" class="btn btn-primary mt-2">Получить отчет</button>
 </div>
 
@@ -62,7 +62,7 @@ else
             $('#SelectedCriteria').select2();
             $('#get_report').on('click', function () {
                 let val = $('#SelectedCriteria').val();
-                $(location).prop('href', `/Dean/ShowReport?criteria=${val}`);
+                $(location).prop('href', `/Teacher/ShowReport?criteria=${val}`);
             });
         });
     </script>

@@ -1,7 +1,7 @@
 ﻿using aspsession.ViewModels.Shared;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace aspsession.ViewModels.Dean;
+namespace aspsession.ViewModels.Shared;
 
 /// <summary>
 /// Модель для просмотра отчета

@@ -55,8 +55,13 @@
     </div>
 }
 
-<div class="action-area">
+<div class="action-area d-flex justify-content-between">
     <h3>Мои ведомости</h3>
+    <div class="d-flex">
+         <a class="btn btn-primary" href="/Teacher/ShowReport">
+            <i class="fas fa-info"></i> Отчет за семестр
+        </a>
+    </div>
 </div>
 
 @if (Model.Where(sheet => sheet.Status != "Отправлена преподавателю").ToList().Count == 0)
