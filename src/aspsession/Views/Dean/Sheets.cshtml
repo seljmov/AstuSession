@@ -58,21 +58,24 @@ else
                                 <i class="fas fa-upload"></i>
                             </a>
                         }
-                        @if (@sheet.Status == "Отправлена на проверку")
+                        @if (@sheet.Status == "Заполнена преподавателем")
                         {
-                            <a href='@Url.Action("UploadSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-success action-icon" title="Нажмите, чтобы отправить ведомость преподавателю.">
+                            <a href='@Url.Action("ConfirmSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-success action-icon" title="Нажмите, чтобы подтвердить получение ведомости.">
                                 <i class="fas fa-check"></i>
                             </a>
                         }
                         <a href='@Url.Action("DetailsSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-primary action-icon" title="Нажмите, чтобы посмотреть подробную информацию о ведомости.">
                             <i class="fas fa-info"></i>
                         </a>
-                        <a href='@Url.Action("EditSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-secondary action-icon" title="Нажмите, чтобы редактировать ведомость.">
-                            <i class="fas fa-pen"></i>
-                        </a>
-                        <a href='@Url.Action("DeleteSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-danger action-icon" title="Нажмите, чтобы удалить ведомость.">
-                            <i class="fas fa-trash"></i>
-                        </a>
+                        @if (@sheet.Status == "Создана")
+                        {
+                            <a href='@Url.Action("EditSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-secondary action-icon" title="Нажмите, чтобы редактировать ведомость.">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href='@Url.Action("DeleteSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-danger action-icon" title="Нажмите, чтобы удалить ведомость.">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        }
                     </div>
                 </td>
             </tr>

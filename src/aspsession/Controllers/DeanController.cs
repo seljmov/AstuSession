@@ -126,6 +126,30 @@ public class DeanController : Controller
         return RedirectToAction("Sheets");
     }
 
+    /// <summary>
+    /// Подтверждение ведомости
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult ConfirmSheet(int id)
+    {
+        var user = _context.Users.ToList().First(x => x.Email == User.Identity.Name);
+
+        var history = new SheetHistory
+        {
+            SheetId = id,
+            StatusId = 5, // Статус - Подтверждено
+            UserId = user.Id,
+            DateCreated = DateTime.Now.ToString("f"),
+        };
+
+        _context.SheetHistories.Add(history);
+        _context.SaveChanges();
+
+        return RedirectToAction("Sheets");
+    }
+
     [HttpGet]
     public IActionResult UploadSheet(int id)
     {
