@@ -1,4 +1,4 @@
-﻿namespace aspsession.ViewModels.Dean;
+﻿namespace aspsession.ViewModels.Shared;
 
 public class SheetHistoryViewModel
 {

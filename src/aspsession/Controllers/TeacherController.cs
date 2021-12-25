@@ -79,6 +79,47 @@ public class TeacherController : Controller
     }
 
     [HttpGet]
+    public IActionResult DetailsSheet(int id)
+    {
+        var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
+        var histories = _context.SheetHistories.Where(x => x.SheetId == id).ToList();
+        var historiesvm = histories.Select(history => new SheetHistoryViewModel
+        {
+            Id = history.Id,
+            Status = _context.SheetStatuses.ToList().FirstOrDefault(status => status.Id == history.StatusId).Name,
+            UserEmail = _context.Users.ToList().FirstOrDefault(user => user.Id == history.UserId).Email,
+            DateCreated = history.DateCreated,
+        }).ToList();
+
+        var marks = _context.StudentSheetRelations
+            .Where(relation => relation.SheetId == sheet.Id)
+            .ToDictionary(x => x.StudentId, x => x.Mark);
+        var students = _context.Students.Where(student => student.GroupId == sheet.GroupId).ToList();
+        var studentsvm = students.Select(student => new StudentSheetViewModel
+        {
+            Id = student.Id,
+            BookNumber = student.BookNumber,
+            Name = student.Name,
+            Mark = marks.ContainsKey(student.Id) ? marks[student.Id] : 0
+        }).ToList();
+
+        var model = new DetailSheetViewModel
+        {
+            Id = sheet.Id,
+            Type = _context.SheetTypes.ToList().FirstOrDefault(type => type.Id == sheet.TypeId).Name,
+            Term = sheet.TermNumber == 1 ? "Осенний" : "Весенний",
+            Year = sheet.Year,
+            Group = GetGroupNameById(sheet.GroupId),
+            Students = studentsvm,
+            Discipline = _context.Disciplines.ToList().FirstOrDefault(disc => disc.Id == sheet.DisciplineId).Name,
+            Teacher = _context.Teachers.ToList().FirstOrDefault(teacher => teacher.Id == sheet.TeacherId).Name,
+            Histories = historiesvm,
+        };
+
+        return View(model);
+    }
+
+    [HttpGet]
     public IActionResult ConfirmSheets(string forms)
     {
         var sheets = JsonConvert.DeserializeObject<IList<SheetViewModel>>(forms);
