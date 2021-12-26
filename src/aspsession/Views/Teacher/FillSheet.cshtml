@@ -96,15 +96,19 @@
                     values.push(isNaN(num) ? -1 : num);
                 }
 
-                console.log(values.length);
+                for (i = 0; i < values.length; i++) {
+                    if (values[i] < 1 || values[i] > 5) {
+                        alert("Ошибка! Оценка должна быть не менее 1 и не более 5.");
+                        return;
+                    }
+                }
+
                 if (values.length == 0) {
                     inputs = $('input[type="checkbox"]');
                     for (i = 0; i < inputs.length; i++) {
                         let num = inputs[i].checked;
                         values.push(num ? 5 : -1);
                     }
-
-                    console.log(values);
                 }
                 
                 let mydata = {
@@ -134,15 +138,19 @@
                     values.push(isNaN(num) ? -1 : num);
                 }
 
-                console.log(values.length);
+                for (i = 0; i < values.length; i++) {
+                    if (values[i] < 1 || values[i] > 5) {
+                        alert("Ошибка! Оценка должна быть не менее 1 и не более 5.");
+                        return;
+                    }
+                }
+
                 if (values.length == 0) {
                     inputs = $('input[type="checkbox"]');
                     for (i = 0; i < inputs.length; i++) {
                         let num = inputs[i].checked;
                         values.push(num ? 5 : -1);
                     }
-
-                    console.log(values);
                 }
                 
                 let mydata = {

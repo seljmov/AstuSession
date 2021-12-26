@@ -5,6 +5,7 @@ using aspsession.ViewModels.Teacher;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace aspsession.Controllers;
@@ -64,7 +65,7 @@ public class TeacherController : Controller
 
             var list0 = model.Where(x => x.Status == "Отправлена преподавателю");
             var list1 = model.Where(x => x.Status == "Получена преподавателем");
-            var list2 = model.Where(x => x.Status == "Отправлена на проверку");
+            var list2 = model.Where(x => x.Status == "Заполнена преподавателем");
             var list3 = model.Where(x => x.Status == "Подтверждена");
             List<SheetViewModel> sheets1 = new();
             sheets1.AddRange(list0);
@@ -123,20 +124,11 @@ public class TeacherController : Controller
     public IActionResult ConfirmSheets(string forms)
     {
         var sheets = JsonConvert.DeserializeObject<IList<SheetViewModel>>(forms);
-        var user = _context.Users.ToList().First(x => x.Email == User.Identity.Name);
-        var teacher = _context.Teachers.ToList().First(x => x.Name == user.Name);
+        var userid = _context.Users.ToList().First(x => x.Email == User.Identity.Name).Id;
 
         foreach (var sheet in sheets)
         {
-            var new_history = new SheetHistory 
-            {
-                SheetId = sheet.Id,
-                StatusId = 3, // Статус - Получение подтверждено
-                UserId = user.Id,
-                DateCreated = DateTime.Now.ToString("f"),
-            };
-
-            _context.SheetHistories.Add(new_history);
+            _context.Database.ExecuteSqlInterpolated($"execute InsertSheetHistory @sheetid = {sheet.Id}, @statusid = {3}, @userid = {userid};");
         }
         _context.SaveChanges();
 
@@ -204,16 +196,8 @@ public class TeacherController : Controller
 
         if (send)
         {
-            var user = _context.Users.ToList().First(x => x.Email == User.Identity.Name);
-            var history = new SheetHistory
-            {
-                SheetId = id,
-                StatusId = 4, // Статус - Отправлена на проверку
-                UserId = user.Id,
-                DateCreated = DateTime.Now.ToString("f"),
-            };
-
-            _context.SheetHistories.Add(history);
+            var userid = _context.Users.ToList().First(x => x.Email == User.Identity.Name).Id;
+            _context.Database.ExecuteSqlInterpolated($"execute InsertSheetHistory @sheetid = {id}, @statusid = {4}, @userid = {userid};");
         }
 
         _context.SaveChanges();
@@ -241,7 +225,9 @@ public class TeacherController : Controller
     [HttpGet]
     public IActionResult ShowReport(string criteria)
     {
-        var sheets = _context.Sheets.ToList();
+        var username = _context.Users.ToList().First(x => x.Email == User.Identity.Name).Name;
+        var teacherid = _context.Teachers.ToList().First(x => x.Name == username).Id;
+        var sheets = _context.Sheets.Where(x => x.TeacherId == teacherid).ToList();
 
         var criteriasvm = sheets.Select(sheet => new SelectListItem
         {

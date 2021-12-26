@@ -74,10 +74,6 @@ public class MySessionContext : DbContext
     /// </summary>
     public DbSet<Teacher> Teachers { get; set; }
 
-    /// <summary>
-    /// Коллекция отношений преподаватель-дисциплина
-    /// </summary>
-    public DbSet<TeacherDisciplinesRelation> TeacherDisciplinesRelations { get; set; }
 
     /// <summary>
     /// Коллекция студентов

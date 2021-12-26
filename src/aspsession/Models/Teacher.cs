@@ -18,5 +18,5 @@ public class Teacher
     /// <summary>
     /// Кафедра
     /// </summary>
-    public int DepartmentsId { get; set; }
+    public int DepartmentId { get; set; }
 }

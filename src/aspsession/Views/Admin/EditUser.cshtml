@@ -12,7 +12,7 @@
         <div class="form-group mb-3">
             <input type="hidden" asp-for="@Model.Id" />
             <label asp-for="Name">ФИО</label>
-            <input asp-for="Name" class="form-control">
+            <input asp-for="Name" class="form-control" readonly>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="mb-3">

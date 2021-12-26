@@ -120,8 +120,19 @@ public class DeanController : Controller
     [HttpPost]
     public IActionResult CreateSheet(CreateSheetViewModal createSheet)
     {
-        _context.Database.ExecuteSqlInterpolated($"execute InsertSheet @type = {createSheet.SelectedType}, @term = {createSheet.TermNumber}, @year = {createSheet.Year}, @group = {createSheet.SelectedGroup}, @disc = {createSheet.SelectedDiscipline}, @teacher = {createSheet.SelectedTeacher}, @user = {_context.Users.ToList().FirstOrDefault(user => user.Email == User.Identity.Name).Id}, @date = N'{DateTime.Now:f}'");
-        _context.SaveChanges();
+        try
+        {
+            _context.Database.ExecuteSqlInterpolated($"execute InsertSheet @type = {createSheet.SelectedType}, @term = {createSheet.TermNumber}, @year = {createSheet.Year}, @group = {createSheet.SelectedGroup}, @disc = {createSheet.SelectedDiscipline}, @teacher = {createSheet.SelectedTeacher}, @user = {_context.Users.ToList().FirstOrDefault(user => user.Email == User.Identity.Name).Id}");
+            _context.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            var message = ex.Message.Split("\r\n").First();
+            ModelState.AddModelError("", message);
+        }
+
+        if (!ModelState.IsValid)
+            return View(createSheet);
 
         return RedirectToAction("Sheets");
     }
@@ -153,16 +164,9 @@ public class DeanController : Controller
     [HttpGet]
     public IActionResult UploadSheet(int id)
     {
-        var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
-        var history = new SheetHistory
-        {
-            SheetId = sheet.Id,
-            StatusId = 2,
-            UserId = _context.Users.ToList().FirstOrDefault(user => user.Email == User.Identity.Name).Id,
-            DateCreated = DateTime.Now.ToString("f"),
-        };
+        var userid = _context.Users.ToList().FirstOrDefault(user => user.Email == User.Identity.Name).Id;
 
-        _context.SheetHistories.Add(history);
+        _context.Database.ExecuteSqlInterpolated($"execute InsertSheetHistory @sheetid = {id}, @statusid = {2}, @userid = {userid};");
         _context.SaveChanges();
 
         return RedirectToAction("Sheets");
@@ -275,8 +279,7 @@ public class DeanController : Controller
     [HttpGet]
     public IActionResult DeleteSheet(int id)
     {
-        var sheet = _context.Sheets.ToList().FirstOrDefault(x => x.Id == id);
-        _context.Sheets.Remove(sheet);
+        _context.Database.ExecuteSqlInterpolated($"execute DeleteSheet @id = {id}");
         _context.SaveChanges();
 
         return RedirectToAction("Sheets");
@@ -340,8 +343,8 @@ public class DeanController : Controller
         {
             Id = teacher.Id,
             Name = teacher.Name,
-            Departments = UniversityHierarchyByDepartmentId(teacher.DepartmentsId).Departments,
-            Institute = UniversityHierarchyByDepartmentId(teacher.DepartmentsId).Institute,
+            Departments = UniversityHierarchyByDepartmentId(teacher.DepartmentId).Departments,
+            Institute = UniversityHierarchyByDepartmentId(teacher.DepartmentId).Institute,
         }).ToList();
 
         return View(model);

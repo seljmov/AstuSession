@@ -4,6 +4,7 @@ using aspsession.ViewModels.Admin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace aspsession.Controllers;
 
@@ -35,7 +36,7 @@ public class AdminController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Users()
+    public IActionResult Users()
     {
         var users = _context.Users.ToList();
         // Берем преподавателей, которых нет в таблице пользователей
@@ -56,7 +57,7 @@ public class AdminController : Controller
                 });
             }
 
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             users = _context.Users.ToList();
         }
 
@@ -90,29 +91,17 @@ public class AdminController : Controller
     /// <param name="user">Данные пользователя</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> CreateUser(User user)
+    public IActionResult CreateUser(User user)
     {
         try
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            _context.Database.ExecuteSqlInterpolated($"execute InsertUser @name = {user.Name}, @roleid = {user.RoleId}, @email = {user.Email}, @password = {user.Password}");
+            _context.SaveChanges();
         }
         catch (Exception ex)
         {
-            var message = ex.InnerException.Message;
-            
-            if (message.ToLower().Contains("error number 1"))
-            {
-                ModelState.AddModelError("", "Недопустимое значение электронной почты!");
-            }
-            else if (message.ToLower().Contains("error number 2"))
-            {
-                ModelState.AddModelError("", "Недопустимое значение для пароля! Минимальная длина не менее 8 символов.");
-            }
-            else if (message.ToLower().Contains("error number 3"))
-            {
-                ModelState.AddModelError("", "Пользователь с таким адресом электронной почты уже существует в системе!");
-            }
+            var message = ex.Message.Split("\r\n").First();
+            ModelState.AddModelError("", message);
         }
 
         if (!ModelState.IsValid)
@@ -139,29 +128,17 @@ public class AdminController : Controller
     /// <param name="user">Данные пользователя</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> EditUser(User user)
+    public IActionResult EditUser(User user)
     {
         try
         {
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            _context.Database.ExecuteSqlInterpolated($"execute UpdateUser @id = {user.Id}, @name = {user.Name}, @roleid = {user.RoleId}, @email = {user.Email}, @password = {user.Password}");
+            _context.SaveChanges();
         }
         catch (Exception ex)
         {
-            var message = ex.InnerException.Message;
-
-            if (message.ToLower().Contains("error number 1"))
-            {
-                ModelState.AddModelError("", "Недопустимое значение электронной почты!");
-            }
-            else if (message.ToLower().Contains("error number 2"))
-            {
-                ModelState.AddModelError("", "Недопустимое значение для пароля! Минимальная длина не менее 8 символов.");
-            }
-            else if (message.ToLower().Contains("error number 3"))
-            {
-                ModelState.AddModelError("", "Пользователь с таким адресом электронной почты уже существует в системе!");
-            }
+            var message = ex.Message.Split("\r\n").First();
+            ModelState.AddModelError("", message);
         }
 
         if (!ModelState.IsValid)
