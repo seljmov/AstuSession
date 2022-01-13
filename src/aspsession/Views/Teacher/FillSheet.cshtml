@@ -1,0 +1,176 @@
+﻿@model aspsession.ViewModels.Teacher.FillSheetViewModel
+
+@{
+    ViewData["Title"] = "Заполнить ведомость";
+    Layout = "_TeacherLayout";
+}
+
+<div style="width: 640px;display: block;margin-left: auto;margin-right: auto;">
+    <h4 class="mt-2 mb-2">Заполнить ведомость на группу @Model.Group</h4>
+    <hr class="mb-4" />
+
+    <div class="mb-2">
+        Идентификатор ведомости: <b>@Model.Id</b>
+    </div>
+    <div class="mb-2">
+        Тип проверки знаний: <b>@Model.Type</b>
+    </div>
+    <div class="mb-2">
+        Дата проведения проверки знаний: <b>@Model.Term.ToLower()</b> семестр <b>@Model.Year</b> года
+    </div>
+    <div class="mb-2">
+        Преподаватель: <b>@Model.Teacher</b>
+    </div>
+    <div class="mb-2">
+        Дисциплина: <b>@Model.Discipline</b>
+    </div>
+    <div class="mb-2">
+        Экзаменуемая учебная группа: <b>@Model.Group</b>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>ФИО</th>
+                    <th>Номер зачетной книжки</th>
+                    <th>Результат*</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < Model.Students.Count; i++)
+                {
+                    <tr>
+                        <td>@(i+1)</td>
+                        <td>@Model.Students[i].Name</td>
+                        <td>@Model.Students[i].BookNumber</td>
+                        <td>
+                            @if (@Model.Type == "Экзамен" || @Model.Type == "Дифференцированный зачет")
+                            {
+                                @if (Model.Students[i].Mark == -1)
+                                {
+                                    <input min="2" max="5" id="result_@Model.Students[i].Id" class="fill-result" type="text" />
+                                }
+                                else
+                                {
+                                    <input min="2" max="5" value="@(Model.Students[i].Mark)" id="result_@Model.Students[i].Id" class="fill-result" type="text" />
+                                }
+                            }
+                            else
+                            {
+                                <div class="form-check">
+                                  <input id="result_@Model.Students[i].Id" checked="@(Model.Students[i].Mark != -1)" class="form-check-input" type="checkbox" value="@(Model.Students[i].Mark != -1)" id="flexCheckDefault_@Model.Students[i].Id">
+                                  <label class="form-check-label" for="flexCheckDefault_@Model.Students[i].Id">
+                                    Зачет
+                                  </label>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+        </table>
+        @if (@Model.Type == "Экзамен" || @Model.Type == "Дифференцированный зачет")
+        {
+            <div class="mb-4">
+                <b>*Оставьте поле незаполненным, если студент не явился на проверку знаний</b>
+            </div>
+        }
+        <div class="d-flex justify-content-between">
+            <button id="save_and_send_button" class="btn btn-success">
+                <i class="fas fa-check"></i> Сохранить и отправить
+            </button>
+            <button id="save_button" class="btn btn-secondary">
+                <i class="fas fa-pen"></i> Сохранить, как черновик
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#save_and_send_button').on('click', function () {
+                let values = [];
+                let inputs = $('input[class="fill-result"]');
+                for (i = 0; i < inputs.length; i++) {
+                    let num = parseInt(inputs[i].value);
+                    values.push(isNaN(num) ? -1 : num);
+                }
+
+                for (i = 0; i < values.length; i++) {
+                    if (values[i] < 1 || values[i] > 5) {
+                        alert("Ошибка! Оценка должна быть не менее 1 и не более 5.");
+                        return;
+                    }
+                }
+
+                if (values.length == 0) {
+                    inputs = $('input[type="checkbox"]');
+                    for (i = 0; i < inputs.length; i++) {
+                        let num = inputs[i].checked;
+                        values.push(num ? 5 : -1);
+                    }
+                }
+                
+                let mydata = {
+                    "id": @(Model.Id),
+                    "marks": values,
+                    "send": true
+                };
+
+                $.post({
+                    url: "/Teacher/FillSheet/",
+                    data: mydata,
+                    success: function (response) {
+                        alert("Отлично! Ведомость сохранена и отправлена на проверку!");
+                        $(location).prop("href", "/Teacher/Sheets/");
+                    },
+                    error: function (response) {
+                        alert("Что-то пошло не так... Попробуйте снова!");
+                    }
+                });
+            });
+
+            $('#save_button').on('click', function () {
+                let values = [];
+                let inputs = $('input[class="fill-result"]');
+                for (i = 0; i < inputs.length; i++) {
+                    let num = parseInt(inputs[i].value);
+                    values.push(isNaN(num) ? -1 : num);
+                }
+
+                for (i = 0; i < values.length; i++) {
+                    if (values[i] < 1 || values[i] > 5) {
+                        alert("Ошибка! Оценка должна быть не менее 1 и не более 5.");
+                        return;
+                    }
+                }
+
+                if (values.length == 0) {
+                    inputs = $('input[type="checkbox"]');
+                    for (i = 0; i < inputs.length; i++) {
+                        let num = inputs[i].checked;
+                        values.push(num ? 5 : -1);
+                    }
+                }
+                
+                let mydata = {
+                    "id": @(Model.Id),
+                    "marks": values,
+                    "send": false
+                };
+
+                $.post({
+                    url: "/Teacher/FillSheet/",
+                    data: mydata,
+                    success: function (response) {
+                        alert("Отлично! Ведомость сохранена как черновик! Вы можете вернуться к редактированию в любое время.");
+                        $(location).prop("href", "/Teacher/Sheets/");
+                    },
+                    error: function (response) {
+                        alert("Что-то пошло не так... Попробуйте снова!");
+                    }
+                });
+            });
+        });
+    </script>
+}

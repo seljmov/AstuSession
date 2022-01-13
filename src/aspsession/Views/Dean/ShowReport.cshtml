@@ -1,0 +1,69 @@
+﻿@model aspsession.ViewModels.Shared.ShowReportViewModel
+
+@{
+    ViewData["Title"] = "Отчет по семестрам";
+    Layout = "_DeanLayout";
+}
+
+<h3>Отчет</h3>
+
+<div class="col-2 mb-4">
+    <label>Выберите семестр</label>
+    <select id="SelectedCriteria" asp-items="Model.ReportCriterias" class="form-select mb-2"></select>
+    <button id="get_report" class="btn btn-primary mt-2">Получить отчет</button>
+</div>
+
+
+@if (Model.Sheets == null)
+{
+    <p><em>Список ведомостей пуст...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Номер ведомости</th>
+                <th>Семестр</th>
+                <th>Год</th>
+                <th>Тип</th>
+                <th>Группа</th>
+                <th>Дисциплина</th>
+                <th>Преподаватель</th>
+                <th>Статус ведомости</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sheet in Model.Sheets)
+            {
+                <tr>
+                    <td>@sheet.Id</td>
+                    <td>@sheet.Term</td>
+                    <td>@sheet.Year</td>
+                    <td>@sheet.Type</td>
+                    <td>@sheet.Group</td>
+                    <td>@sheet.Discipline</td>
+                    <td>@sheet.Teacher</td>
+                    <td>@sheet.Status</td>
+                    <td>
+                        <a href='@Url.Action("DetailsSheet", "Dean", new { id = sheet.Id }, null)' class="btn btn-outline-primary action-icon" title="Нажмите, чтобы посмотреть подробную информацию о ведомости.">
+                            <i class="fas fa-info"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#SelectedCriteria').select2();
+            $('#get_report').on('click', function () {
+                let val = $('#SelectedCriteria').val();
+                $(location).prop('href', `/Dean/ShowReport?criteria=${val}`);
+            });
+        });
+    </script>
+}

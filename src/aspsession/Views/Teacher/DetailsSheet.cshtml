@@ -1,0 +1,91 @@
+﻿@model aspsession.ViewModels.Shared.DetailSheetViewModel
+
+@{
+    ViewData["Title"] = "Подробнее";
+    Layout = "_TeacherLayout";
+}
+
+<div style="width: 640px;display: block;margin-left: auto;margin-right: auto;">
+    <h4 class="mt-2 mb-2">Информация о ведомости на группу @Model.Group</h4>
+    <hr class="mb-4" />
+
+    <div class="mb-2">
+        Идентификатор ведомости: <b>@Model.Id</b>
+    </div>
+    <div class="mb-2">
+        Тип проверки знаний: <b>@Model.Type</b>
+    </div>
+    <div class="mb-2">
+        Дата проведения проверки знаний: <b>@Model.Term.ToLower()</b> семестр <b>@Model.Year</b> года
+    </div>
+    <div class="mb-2">
+        Преподаватель: <b>@Model.Teacher</b>
+    </div>
+    <div class="mb-2">
+        Дисциплина: <b>@Model.Discipline</b>
+    </div>
+    <div class="mb-2">
+        Экзаменуемая учебная группа: <b>@Model.Group</b>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>ФИО</th>
+                    <th>Номер зачетной книжки</th>
+                    <th>Результат</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var (student, index) in @Model.Students.Select((student, index) => (student, index)))
+                {
+                    <tr>
+                        <td>@(index + 1)</td>
+                        <td>@student.Name</td>
+                        <td>@student.BookNumber</td>
+                        <td>
+                            @if (student.Mark == 0)
+                            {
+                                <p>-</p>
+                            }
+                            else
+                            {
+                                @if (@Model.Type == "Экзамен" || @Model.Type == "Дифференцированный зачет")
+                                {
+                                    @(student.Mark == -1 ? "Неявка" : student.Mark)
+                                }
+                                else
+                                {
+                                    @(student.Mark == -1 ? "Незачет" : "Зачет")
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+        </table>
+    </div>
+    <div class="mb-2">
+        <b>История ведомости</b>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Статус</th>
+                    <th>Дата</th>
+                    <th>Кто сменил статус?</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < Model.Histories.Count; i++)
+                {
+                    <tr>
+                        <td>@(i+1)</td>
+                        <td>@Model.Histories[i].Status</td>
+                        <td>@Model.Histories[i].DateCreated</td>
+                        <td>@Model.Histories[i].UserEmail</td>
+                    </tr>
+                }
+                </tbody>
+        </table>
+    </div>
+</div>
